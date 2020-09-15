@@ -3,10 +3,10 @@
 # This is just an example on how we can run hubot with docker.
 export PORT=9999
 export EXPRESS_PORT=9999
-export HUBOT_SLACK_TOKEN=SLACK-TOKEN
+export HUBOT_SLACK_TOKEN=<clasic slack bot token>
 export HUBOT_ADAPTER=slack
-export HUBOT_JENKINS_URL=http://192.168.1.176:9090
-export HUBOT_JENKINS_AUTH=chatops:1dfe4faa44ffb00e0080186b9f0df1a5
+export HUBOT_JENKINS_URL=http://Jenkinshost:port
+export HUBOT_JENKINS_AUTH=chatops:nhy6^YHNnhy6^YHN
 
 docker run \
   -e "HUBOT_SLACK_TOKEN=$HUBOT_SLACK_TOKEN" \
@@ -14,5 +14,9 @@ docker run \
   -e "HUBOT_JENKINS_URL=$HUBOT_JENKINS_URL" \
   -e "HUBOT_JENKINS_AUTH=$HUBOT_JENKINS_AUTH" \
   -p 9999:8080 \
-  -td --name ChatOps_Slack \
+  --network jenkins \
+  -td --name hubot \
   thoughtslive/hubot-base
+
+## If you are running Jenkins in a container the approval / proceed fucntionality from slack back to jenkins might not work.
+## Only hubotsend message will work due to reverse proxyign issue.
