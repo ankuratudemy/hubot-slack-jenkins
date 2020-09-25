@@ -1,10 +1,10 @@
-FROM node:4.4.3-slim
-
+#FROM node:4.4.3-slim
+FROM node:latest
 MAINTAINER "Naresh Rayapati" <naresh.rayapati@yahoo.com>
 
 # Install CoffeeScript, Hubot
 RUN \
-  npm install -g coffee-script hubot yo generator-hubot && \
+  npm install -g coffeescript@1.12.7 hubot yo generator-hubot && \
   rm -rf /var/lib/apt/lists/*
 
 # Make user for Hubot
@@ -20,4 +20,5 @@ ADD scripts /home/hubot/scripts
 
 RUN npm install --silent
 
-CMD ["/bin/sh", "-c", "bin/hubot"]
+CMD ["/bin/sh", "-c", " bin/hubot"]
+

@@ -24,7 +24,6 @@
 #   dougcole, nrayapati
 
 querystring = require 'querystring'
-request = require 'request'
 
 jobList = []
 
@@ -35,7 +34,7 @@ jenkinsBuild = (msg, buildWithEmptyParameters) ->
     params = msg.match[3]
     command = if buildWithEmptyParameters then "buildWithParameters" else "build"
     path = if params then "#{url}#{jobPath}buildWithParameters?#{params}" else "#{url}#{jobPath}#{command}"
-    
+
     req = msg.http(path)
 
     if process.env.HUBOT_JENKINS_AUTH
@@ -57,63 +56,32 @@ jenkinsBuild = (msg, buildWithEmptyParameters) ->
           msg.reply "```Jenkins says: Status #{res.statusCode} #{body}```"
 
 jenkinsProceed = (msg, buildWithEmptyParameters) ->
-    cookie =''
-    crumb=''
-    j=''
     url = process.env.HUBOT_JENKINS_URL
-    path = "#{url}crumbIssuer/api/json"
+    jobPath = querystring.escape msg.match[1]
+    jobPath = jobPath.split("%2F").join("/")
+    inputId = 'Proceed'
+    command = if buildWithEmptyParameters then "buildWithParameters" else "build"
+    path = "#{url}#{jobPath}input/#{inputId}/proceedEmpty"
+
     req = msg.http(path)
+
     if process.env.HUBOT_JENKINS_AUTH
       auth = new Buffer(process.env.HUBOT_JENKINS_AUTH).toString('base64')
       req.headers Authorization: "Basic #{auth}"
-    req.get() (err, res, body) ->
+
+    req.header('Content-Length', 0)
+    req.header('Jenkins-Crumb', process.env.HUBOT_JENKINS_CRUMB)
+    req.post() (err, res, body) ->
         if err
-          msg.reply "```Jenkins says 11: #{err}```"
+          msg.reply "```Jenkins says: #{err}```"
+        else if 200 <= res.statusCode < 400 # Or, not an error code.
+          msg.reply "```(#{res.statusCode}) Proceeding with #{url}#{jobPath} ```"
+        else if 400 == res.statusCode
+          jenkinsBuild(msg, true)
+        else if 404 == res.statusCode
+          msg.reply "```Build not found, double check that it exists and is spelt correctly.```"
         else
-          
-          try
-            content = JSON.parse(body)
-            crumb=content.crumb
-            console.log("Crumb value",crumb)
-            console.log("Res value",res.headers['set-cookie'][0])
-            c = res.headers['set-cookie'][0]
-            cookie = c.split(';')[0]
-            console.log("Cookie",cookie)
-            # c.header = res.headers["set-cookie"]
-            # console.log(c.header)
-            # fs.writeFile('./config.json',JSON.stringify(c),cb)
-            url = process.env.HUBOT_JENKINS_URL
-            jobPath = querystring.escape msg.match[1]
-            jobPath = jobPath.split("%2F").join("/")
-            inputId = 'Proceed'
-            command = if buildWithEmptyParameters then "buildWithParameters" else "build"
-            path = "#{url}#{jobPath}input/#{inputId}/proceedEmpty"
-            console.log("Path is", path)
-            req = msg.http(path)
-      
-            if process.env.HUBOT_JENKINS_AUTH
-               auth = new Buffer(process.env.HUBOT_JENKINS_AUTH).toString('base64')
-               req.headers Authorization: "Basic #{auth}"
-
-            req.header('Cookie', cookie)
-            req.header('Content-Length', 0)
-            req.header('Jenkins-Crumb', crumb)
-            console.log("Req", req)
-            req.post() (err, res, body) ->
-                if err
-                  msg.reply "```Jenkins says: #{err}```"
-                else if 200 <= res.statusCode < 400 # Or, not an error code.
-                  msg.reply "```(#{res.statusCode}) Proceeding with #{url}#{jobPath} ```"
-                else if 400 == res.statusCode
-                  jenkinsBuild(msg, true)
-                else if 404 == res.statusCode
-                  msg.reply "```Build not found, double check that it exists and is spelt correctly.```"
-                else
-                  msg.reply "```Jenkins says: Status #{res.statusCode} #{body}```"
-          catch error
-             msg.send error
-
-    
+          msg.reply "```Jenkins says: Status #{res.statusCode} #{body}```"
 
 jenkinsAbort = (msg, buildWithEmptyParameters) ->
     url = process.env.HUBOT_JENKINS_URL
@@ -272,7 +240,7 @@ jenkinsList = (msg) ->
         if process.env.HUBOT_JENKINS_AUTH
           auth = new Buffer(process.env.HUBOT_JENKINS_AUTH).toString('base64')
           req.headers Authorization: "Basic #{auth}"
-
+          
         req.header('Jenkins-Crumb', process.env.HUBOT_JENKINS_CRUMB)
         req.get() (err, res, body) ->
           response = ""
