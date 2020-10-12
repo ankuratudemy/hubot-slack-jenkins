@@ -1,8 +1,7 @@
-#FROM node:4.4.3-slim
 FROM node:latest
-MAINTAINER "Naresh Rayapati" <naresh.rayapati@yahoo.com>
+MAINTAINER "Ankur Gupta" <ankuratudemy@gmail.com>
 
-# Install CoffeeScript, Hubot
+# Install CoffeeScript, Hubot CoffeeScript version 2 and above are not compatible with hubot yet
 RUN \
   npm install -g coffeescript@1.12.7 hubot yo generator-hubot && \
   rm -rf /var/lib/apt/lists/*
