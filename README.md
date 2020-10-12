@@ -1,5 +1,5 @@
 # Hubot Base - Docker Image (ChatOps)
-
+Includes Jenkins.coffee scripts. works with https://www.jenkins.io/doc/upgrade-guide/2.176/  and above
 Created with integration with jenkins plugin [hubot-steps][hubot-steps].
 
 Following packages are install by default, are enabled by setting appropriate configuration.
