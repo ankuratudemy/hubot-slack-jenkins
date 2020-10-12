@@ -33,25 +33,11 @@ You can start ChatOps locally by running:
     
     % ./run-local.sh
 
-You have any questions please don't hesitate to contact [nrayapati](https://github.com/nrayapati)
 
-## The Below is Auto Generated.
-
-You'll see some start up output and a prompt:
-
-    [Sat Feb 28 2015 12:38:27 GMT+0000 (GMT)] INFO Using default redis on localhost:6379
-    ChatOps>
-
-Then you can interact with ChatOps by typing `ChatOps help`.
-
-    ChatOps> ChatOps help
-    ChatOps animate me <query> - The same thing as `image me`, except adds [snip]
-    ChatOps help - Displays all of the help commands that ChatOps knows about.
-    ...
 
 ### Building Docker Image
   
-    % docker build -t thoughtslive/hubot-base .
+    % docker build -t ankuratudemy/hubot-slack-jenkins .
 
 ### Configuration
 
